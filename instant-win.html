@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUCKY STRIKE — Instant Win</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #FFD24C;
+    --gold-dark: #B8860B;
+    --bg: #0A0A0F;
+    --surface: #111118;
+    --surface2: #1A1A24;
+    --red: #FF3B3B;
+    --green: #00E676;
+    --white: #F0EDE4;
+    --gray: #555566;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Animated grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+  }
+
+  /* Scanlines */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+    pointer-events: none;
+    z-index: 99;
+  }
+
+  /* Floating orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    animation: drift 8s ease-in-out infinite alternate;
+  }
+  .orb-1 { width: 400px; height: 400px; background: rgba(255,210,76,0.08); top: -100px; left: -100px; animation-delay: 0s; }
+  .orb-2 { width: 300px; height: 300px; background: rgba(255,59,59,0.06); bottom: -50px; right: -50px; animation-delay: -3s; }
+  .orb-3 { width: 200px; height: 200px; background: rgba(0,230,118,0.05); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -5s; }
+
+  @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(30px, 20px) scale(1.1); } }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .header-badge {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(255,210,76,0.3);
+    padding: 6px 16px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .header-badge::before,
+  .header-badge::after {
+    content: '◆';
+    margin: 0 8px;
+    font-size: 8px;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(72px, 15vw, 120px);
+    letter-spacing: 0.05em;
+    line-height: 0.9;
+    color: var(--gold);
+    text-shadow: 0 0 60px rgba(255,210,76,0.3), 4px 4px 0 rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  .subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: rgba(240,237,228,0.5);
+    margin-top: 8px;
+  }
+
+  /* Prize ticker */
+  .ticker-wrap {
+    overflow: hidden;
+    border-top: 1px solid rgba(255,210,76,0.2);
+    border-bottom: 1px solid rgba(255,210,76,0.2);
+    padding: 10px 0;
+    margin: -8px 0 40px;
+    background: rgba(255,210,76,0.03);
+  }
+
+  .ticker {
+    display: flex;
+    gap: 60px;
+    animation: ticker 20s linear infinite;
+    white-space: nowrap;
+  }
+
+  .ticker-item {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    opacity: 0.6;
+    text-transform: uppercase;
+  }
+
+  .ticker-item span { color: var(--white); opacity: 1; }
+
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* Game card */
+  .game-card {
+    background: var(--surface);
+    border: 1px solid rgba(255,210,76,0.12);
+    border-radius: 4px;
+    padding: 40px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .game-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  /* Form fields */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.7;
+  }
+
+  input, select {
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 2px;
+    color: var(--white);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+
+  input::placeholder { color: var(--gray); }
+
+  input:focus, select:focus {
+    border-color: rgba(255,210,76,0.4);
+    box-shadow: 0 0 0 3px rgba(255,210,76,0.06);
+  }
+
+  select option { background: #1A1A24; }
+
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .checkbox-row input[type="checkbox"] {
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+
+  .checkbox-row label {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: none;
+    color: rgba(240,237,228,0.4);
+    line-height: 1.6;
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .checkbox-row label a { color: var(--gold); opacity: 0.7; text-decoration: none; }
+
+  /* Play button */
+  .btn-play {
+    width: 100%;
+    margin-top: 28px;
+    padding: 20px;
+    background: var(--gold);
+    color: #0A0A0F;
+    border: none;
+    border-radius: 2px;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 28px;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 8px 30px rgba(255,210,76,0.2);
+  }
+
+  .btn-play::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 60%);
+  }
+
+  .btn-play:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(255,210,76,0.35);
+  }
+
+  .btn-play:active { transform: translateY(1px); }
+
+  .btn-play:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Scratch card game */
+  #scratch-section {
+    display: none;
+  }
+
+  #scratch-section.visible { display: block; }
+
+  .scratch-title {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .scratch-title h2 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 42px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  .scratch-title p {
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: rgba(240,237,228,0.4);
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* Slot machine display */
+  .slots-container {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 32px 0;
+  }
+
+  .slot {
+    width: 100px;
+    height: 120px;
+    background: var(--surface2);
+    border: 2px solid rgba(255,210,76,0.15);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .slot.spinning {
+    border-color: rgba(255,210,76,0.5);
+    animation: slotPulse 0.1s linear infinite;
+  }
+
+  .slot.revealed {
+    border-color: rgba(255,210,76,0.3);
+    animation: revealPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes slotPulse {
+    0%, 100% { background: var(--surface2); }
+    50% { background: rgba(255,210,76,0.06); }
+  }
+
+  @keyframes revealPop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .slot .reel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    transition: all 0.5s;
+  }
+
+  .slot::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 0; right: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent 30%, transparent 70%, rgba(0,0,0,0.6));
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* Result display */
+  #result-section {
+    display: none;
+    text-align: center;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  #result-section.visible { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-win, .result-lose {
+    padding: 48px 40px;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-win {
+    background: radial-gradient(ellipse at center, rgba(0,230,118,0.12) 0%, transparent 70%);
+    border: 1px solid rgba(0,230,118,0.3);
+  }
+
+  .result-lose {
+    background: radial-gradient(ellipse at center, rgba(255,59,59,0.08) 0%, transparent 70%);
+    border: 1px solid rgba(255,59,59,0.2);
+  }
+
+  .result-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    display: block;
+    animation: iconBounce 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
+  }
+
+  @keyframes iconBounce {
+    from { transform: scale(0) rotate(-20deg); opacity: 0; }
+    to { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .result-headline {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 56px;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .win-headline { color: var(--green); text-shadow: 0 0 40px rgba(0,230,118,0.4); }
+  .lose-headline { color: rgba(240,237,228,0.5); }
+
+  .result-prize {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .result-msg {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: rgba(240,237,228,0.4);
+    line-height: 1.7;
+    max-width: 400px;
+    margin: 0 auto 28px;
+  }
+
+  .result-code {
+    display: inline-block;
+    background: rgba(255,210,76,0.1);
+    border: 1px dashed rgba(255,210,76,0.4);
+    padding: 10px 24px;
+    font-size: 18px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    margin-bottom: 28px;
+    font-weight: 500;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(240,237,228,0.6);
+    padding: 12px 28px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(255,255,255,0.3);
+    color: var(--white);
+  }
+
+  /* Confetti particles */
+  .confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    overflow: hidden;
+  }
+
+  .confetti-piece {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    top: -10px;
+    animation: confettiFall linear forwards;
+    border-radius: 1px;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 16px;
+    text-align: center;
+    border-radius: 2px;
+  }
+
+  .stat-num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 28px;
+    color: var(--gold);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+
+  /* Prize list */
+  .prize-list {
+    background: var(--surface);
+    border: 1px solid rgba(255,210,76,0.08);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .prize-list-title {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.6;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .prize-list-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,210,76,0.1);
+  }
+
+  .prize-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .prize-row:last-child { border-bottom: none; }
+
+  .prize-name { font-size: 13px; color: var(--white); }
+  .prize-odds { font-size: 11px; color: var(--gray); }
+  .prize-count {
+    font-size: 11px;
+    color: var(--gold);
+    background: rgba(255,210,76,0.1);
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+
+  /* Legal footer */
+  .legal {
+    font-size: 10px;
+    color: var(--gray);
+    line-height: 1.8;
+    letter-spacing: 0.03em;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 24px;
+    margin-top: 12px;
+  }
+
+  /* Spin animation overlay */
+  .spin-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .spin-overlay.active { display: flex; }
+
+  .spin-loader {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 18px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    animation: blink 0.6s step-end infinite;
+    margin-top: 24px;
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+  .spin-ring {
+    width: 80px; height: 80px;
+    border: 3px solid rgba(255,210,76,0.15);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Error state */
+  .error-msg {
+    background: rgba(255,59,59,0.1);
+    border: 1px solid rgba(255,59,59,0.3);
+    color: var(--red);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    padding: 10px 16px;
+    border-radius: 2px;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .error-msg.visible { display: block; }
+
+  @media (max-width: 560px) {
+    .field-row { grid-template-columns: 1fr; }
+    .slots-container { gap: 8px; }
+    .slot { width: 80px; height: 100px; font-size: 40px; }
+    .game-card { padding: 24px; }
+    .stats-bar { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="confetti-container" id="confetti"></div>
+
+<div class="spin-overlay" id="spinOverlay">
+  <div class="spin-ring"></div>
+  <div class="spin-loader">PROCESSING ENTRY...</div>
+</div>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">Official Sweepstakes ◆ Est. 2024</div>
+    <h1>Lucky<br>Strike</h1>
+    <div class="subtitle">Instant Win Game</div>
+  </div>
+
+  <!-- Ticker -->
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <span class="ticker-item">Grand Prize <span>$10,000 CASH</span></span>
+      <span class="ticker-item">Odds of winning <span>1 in 20</span></span>
+      <span class="ticker-item">Daily entries <span>RESET AT MIDNIGHT</span></span>
+      <span class="ticker-item">Total prizes <span>5,280 AVAILABLE</span></span>
+      <span class="ticker-item">No purchase <span>NECESSARY</span></span>
+      <span class="ticker-item">Grand Prize <span>$10,000 CASH</span></span>
+      <span class="ticker-item">Odds of winning <span>1 in 20</span></span>
+      <span class="ticker-item">Daily entries <span>RESET AT MIDNIGHT</span></span>
+      <span class="ticker-item">Total prizes <span>5,280 AVAILABLE</span></span>
+      <span class="ticker-item">No purchase <span>NECESSARY</span></span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-num" id="statEntries">8,442</span>
+      <div class="stat-label">Entries Today</div>
+    </div>
+    <div class="stat">
+      <span class="stat-num" id="statWinners">312</span>
+      <div class="stat-label">Winners Today</div>
+    </div>
+    <div class="stat">
+      <span class="stat-num" id="statPrizes">4,968</span>
+      <div class="stat-label">Prizes Left</div>
+    </div>
+  </div>
+
+  <!-- Entry Form -->
+  <div class="game-card" id="entrySection">
+    <div class="field-row">
+      <div class="field">
+        <label>First Name</label>
+        <input type="text" id="firstName" placeholder="Jane">
+      </div>
+      <div class="field">
+        <label>Last Name</label>
+        <input type="text" id="lastName" placeholder="Smith">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field full">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="jane@example.com">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Date of Birth</label>
+        <input type="date" id="dob">
+      </div>
+      <div class="field">
+        <label>State</label>
+        <select id="state">
+          <option value="">Select State</option>
+          <option>Alabama</option><option>Alaska</option><option>Arizona</option>
+          <option>Arkansas</option><option>California</option><option>Colorado</option>
+          <option>Connecticut</option><option>Delaware</option><option>Florida</option>
+          <option>Georgia</option><option>Hawaii</option><option>Idaho</option>
+          <option>Illinois</option><option>Indiana</option><option>Iowa</option>
+          <option>Kansas</option><option>Kentucky</option><option>Louisiana</option>
+          <option>Maine</option><option>Maryland</option><option>Massachusetts</option>
+          <option>Michigan</option><option>Minnesota</option><option>Mississippi</option>
+          <option>Missouri</option><option>Montana</option><option>Nebraska</option>
+          <option>Nevada</option><option>New Hampshire</option><option>New Jersey</option>
+          <option>New Mexico</option><option>New York</option><option>North Carolina</option>
+          <option>North Dakota</option><option>Ohio</option><option>Oklahoma</option>
+          <option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option>
+          <option>South Carolina</option><option>South Dakota</option><option>Tennessee</option>
+          <option>Texas</option><option>Utah</option><option>Vermont</option>
+          <option>Virginia</option><option>Washington</option><option>West Virginia</option>
+          <option>Wisconsin</option><option>Wyoming</option>
+        </select>
+      </div>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="agree">
+      <label for="agree">I am 18+ years old, a legal US resident, and agree to the <a href="#">Official Rules</a>. I understand this is a free sweepstakes and no purchase is necessary to enter or win.</label>
+    </div>
+    <div class="error-msg" id="errorMsg">⚠ Please complete all fields to continue.</div>
+    <button class="btn-play" id="playBtn" onclick="handlePlay()">PLAY NOW — ENTER TO WIN</button>
+  </div>
+
+  <!-- Slot Machine Game -->
+  <div id="scratch-section">
+    <div class="scratch-title">
+      <h2>SPIN THE REELS</h2>
+      <p>Match 3 symbols to win · Results are final</p>
+    </div>
+
+    <div class="game-card" style="padding: 32px 40px;">
+      <div class="slots-container" id="slotsContainer">
+        <div class="slot" id="slot0"><div class="reel">🎰</div></div>
+        <div class="slot" id="slot1"><div class="reel">🎰</div></div>
+        <div class="slot" id="slot2"><div class="reel">🎰</div></div>
+      </div>
+    </div>
+
+    <div id="result-section">
+    </div>
+  </div>
+
+  <!-- Prize list -->
+  <div class="prize-list">
+    <div class="prize-list-title">Available Prizes</div>
+    <div class="prize-row">
+      <span class="prize-name">💰 Grand Prize — $10,000 Cash</span>
+      <span class="prize-count">2 remaining</span>
+      <span class="prize-odds">1 in 5,000</span>
+    </div>
+    <div class="prize-row">
+      <span class="prize-name">🏆 $500 Gift Card</span>
+      <span class="prize-count">18 remaining</span>
+      <span class="prize-odds">1 in 500</span>
+    </div>
+    <div class="prize-row">
+      <span class="prize-name">🎁 $50 Gift Card</span>
+      <span class="prize-count">250 remaining</span>
+      <span class="prize-odds">1 in 100</span>
+    </div>
+    <div class="prize-row">
+      <span class="prize-name">🌟 Bonus Entry Token</span>
+      <span class="prize-count">4,698 remaining</span>
+      <span class="prize-odds">1 in 20</span>
+    </div>
+  </div>
+
+  <!-- Legal -->
+  <div class="legal">
+    NO PURCHASE NECESSARY. Open to legal residents of the 50 United States and D.C., 18 years of age or older. Void where prohibited. Sweepstakes ends 12/31/2025 at 11:59 PM ET. One entry per person per day. Odds of winning depend on number of eligible entries received. Sponsor not liable for technical errors. Potential winners subject to verification of eligibility. Winners must respond within 3 days of notification. Subject to complete Official Rules available upon request. Sponsor's decisions are final. Alternative method of entry: mail a 3×5 card with name, address, and date of birth to Lucky Strike Sweepstakes, PO Box 1000, New York, NY 10001.
+  </div>
+
+</div>
+
+<script>
+  const EMOJIS = ['🍋','🍒','⭐','💎','🔔','7️⃣','🍀','🌙'];
+  const WIN_COMBOS = ['🍒🍒🍒','⭐⭐⭐','💎💎💎','7️⃣7️⃣7️⃣','🍀🍀🍀','🔔🔔🔔'];
+
+  const PRIZES = [
+    { emoji: '💎', name: 'GRAND PRIZE', desc: '$10,000 Cash Award', code: true },
+    { emoji: '🏆', name: 'WINNER!', desc: '$500 Gift Card', code: true },
+    { emoji: '🌟', name: 'YOU WON!', desc: '$50 Gift Card', code: true },
+    { emoji: '🎉', name: 'BONUS ENTRY!', desc: 'Extra Play Token — Try Again Tomorrow', code: false },
+  ];
+
+  // ~1 in 5 chance of winning something
+  function determineOutcome() {
+    const now = new Date();
+    const seed = now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds();
+    const r = (seed * 9301 + 49297) % 233280;
+    const rnd = r / 233280;
+
+    if (rnd < 0.0002) return { win: true, prize: PRIZES[0], symbols: ['💎','💎','💎'] };
+    if (rnd < 0.002) return { win: true, prize: PRIZES[1], symbols: ['⭐','⭐','⭐'] };
+    if (rnd < 0.05) return { win: true, prize: PRIZES[2], symbols: ['🍒','🍒','🍒'] };
+    if (rnd < 0.2) return { win: true, prize: PRIZES[3], symbols: ['🍀','🍀','🍀'] };
+
+    // Losing combination — no match
+    const picks = [];
+    while (picks.length < 3) {
+      const e = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+      if (picks.length === 2 && picks[0] === picks[1] && picks[0] === e) continue;
+      picks.push(e);
+    }
+    // Ensure no accidental triple match
+    if (picks[0] === picks[1] && picks[1] === picks[2]) picks[2] = picks[2] === '🍋' ? '🍒' : '🍋';
+    return { win: false, symbols: picks };
+  }
+
+  function validateForm() {
+    const fn = document.getElementById('firstName').value.trim();
+    const ln = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const dob = document.getElementById('dob').value;
+    const state = document.getElementById('state').value;
+    const agree = document.getElementById('agree').checked;
+    const err = document.getElementById('errorMsg');
+
+    if (!fn || !ln || !email || !dob || !state || !agree) {
+      err.classList.add('visible');
+      err.textContent = '⚠ Please complete all fields and agree to the rules.';
+      return false;
+    }
+
+    // Age check
+    const birthDate = new Date(dob);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    if (age < 18) {
+      err.classList.add('visible');
+      err.textContent = '⚠ You must be 18 or older to enter.';
+      return false;
+    }
+
+    // Email basic check
+    if (!email.includes('@') || !email.includes('.')) {
+      err.classList.add('visible');
+      err.textContent = '⚠ Please enter a valid email address.';
+      return false;
+    }
+
+    err.classList.remove('visible');
+    return true;
+  }
+
+  function handlePlay() {
+    if (!validateForm()) return;
+
+    const overlay = document.getElementById('spinOverlay');
+    overlay.classList.add('active');
+
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      showSlots();
+    }, 1800);
+  }
+
+  function showSlots() {
+    document.getElementById('entrySection').style.display = 'none';
+    const scratchSection = document.getElementById('scratch-section');
+    scratchSection.classList.add('visible');
+    scratchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const outcome = determineOutcome();
+
+    // Spin slots
+    const slots = [0, 1, 2];
+    const spinEmojis = ['🍋','🍒','⭐','💎','🔔','7️⃣','🍀','🌙'];
+
+    slots.forEach((i) => {
+      const el = document.getElementById('slot' + i);
+      el.classList.add('spinning');
+      el.querySelector('.reel').textContent = '?';
+    });
+
+    // Reveal one by one
+    slots.forEach((i, idx) => {
+      setTimeout(() => {
+        const el = document.getElementById('slot' + i);
+        el.classList.remove('spinning');
+        el.classList.add('revealed');
+        el.querySelector('.reel').textContent = outcome.symbols[i];
+
+        if (idx === 2) {
+          setTimeout(() => showResult(outcome), 600);
+        }
+      }, 1000 + idx * 600);
+    });
+  }
+
+  function showResult(outcome) {
+    const resultSection = document.getElementById('result-section');
+    resultSection.classList.add('visible');
+    resultSection.style.display = 'block';
+
+    if (outcome.win) {
+      const prize = outcome.prize;
+      const codeStr = prize.code ? generateCode() : null;
+
+      resultSection.innerHTML = `
+        <div class="result-win">
+          <span class="result-icon">${prize.emoji}</span>
+          <div class="result-headline win-headline">${prize.name}</div>
+          <div class="result-prize">${prize.desc}</div>
+          ${codeStr ? `<div class="result-code">${codeStr}</div><br>` : ''}
+          <div class="result-msg">
+            Congratulations! Your win is pending verification. You will receive an email within 48 hours to confirm eligibility. You must respond within 3 days to claim your prize.
+          </div>
+          <button class="btn-secondary" onclick="resetGame()">PLAY AGAIN TOMORROW</button>
+        </div>
+      `;
+
+      launchConfetti();
+    } else {
+      resultSection.innerHTML = `
+        <div class="result-lose">
+          <span class="result-icon">😔</span>
+          <div class="result-headline lose-headline">NOT A WINNER</div>
+          <div class="result-prize" style="color: rgba(240,237,228,0.4); font-style:normal; font-size:16px;">Better luck next time</div>
+          <div class="result-msg">
+            Your symbols did not match today. Come back tomorrow for another chance to win. Entries reset daily at midnight. Remember — 1 in 5 players wins a prize!
+          </div>
+          <button class="btn-secondary" onclick="resetGame()">TRY AGAIN TOMORROW</button>
+        </div>
+      `;
+    }
+
+    resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function generateCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 12; i++) {
+      if (i > 0 && i % 4 === 0) code += '-';
+      code += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return code;
+  }
+
+  function resetGame() {
+    location.reload();
+  }
+
+  function launchConfetti() {
+    const colors = ['#FFD24C','#FF3B3B','#00E676','#4FC3F7','#F48FB1','#FFFFFF'];
+    const container = document.getElementById('confetti');
+    const count = 120;
+
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.width = (Math.random() * 8 + 4) + 'px';
+        piece.style.height = (Math.random() * 8 + 4) + 'px';
+        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        piece.style.animationDuration = (Math.random() * 2.5 + 1.5) + 's';
+        piece.style.animationDelay = Math.random() * 0.5 + 's';
+        container.appendChild(piece);
+        setTimeout(() => piece.remove(), 4000);
+      }, i * 20);
+    }
+  }
+
+  // Animate stats slowly
+  function animateStat(id, end, interval) {
+    setInterval(() => {
+      const el = document.getElementById(id);
+      const val = parseInt(el.textContent.replace(',', ''));
+      const change = Math.random() > 0.7 ? (Math.random() > 0.5 ? 1 : -1) : 0;
+      el.textContent = (val + change).toLocaleString();
+    }, interval);
+  }
+
+  animateStat('statEntries', 8442, 2800);
+  animateStat('statWinners', 312, 4500);
+</script>
+</body>
+</html>
