@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COSMIC TREASURE HUNT — Instant Win!</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0D0B2E;
+  --pink: #FF4ECD;
+  --cyan: #00F5FF;
+  --yellow: #FFE94E;
+  --orange: #FF8C42;
+  --green: #4EFFB4;
+  --purple: #B44EFF;
+  --white: #FFF8F0;
+  --card-bg: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.12);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ctext y='24' font-size='24'%3E🚀%3C/text%3E%3C/svg%3E") 4 4, auto;
+}
+.space-bg { position: fixed; inset: 0; overflow: hidden; z-index: 0; }
+.stars-layer {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, white, transparent),
+    radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1.5px 1.5px at 40% 8%, white, transparent),
+    radial-gradient(1px 1px at 55% 55%, rgba(255,255,255,.7), transparent),
+    radial-gradient(2px 2px at 70% 20%, white, transparent),
+    radial-gradient(1px 1px at 80% 70%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1px 1px at 92% 35%, white, transparent),
+    radial-gradient(1.5px 1.5px at 15% 75%, white, transparent),
+    radial-gradient(1px 1px at 33% 90%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1px 1px at 60% 85%, white, transparent),
+    radial-gradient(2px 2px at 5% 50%, rgba(0,245,255,.5), transparent),
+    radial-gradient(1px 1px at 88% 10%, rgba(255,78,205,.5), transparent),
+    radial-gradient(2px 2px at 48% 65%, rgba(255,233,78,.4), transparent);
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+@keyframes twinkle { 0%{opacity:0.7} 100%{opacity:1} }
+.nebula { position:absolute; border-radius:50%; filter:blur(80px); animation:nebulaFloat 12s ease-in-out infinite alternate; pointer-events:none; }
+.nebula-1 { width:600px;height:400px;background:radial-gradient(ellipse,rgba(180,78,255,0.15),transparent 70%);top:-100px;left:-100px; }
+.nebula-2 { width:500px;height:500px;background:radial-gradient(ellipse,rgba(255,78,205,0.12),transparent 70%);bottom:-100px;right:-100px;animation-delay:-4s; }
+.nebula-3 { width:400px;height:300px;background:radial-gradient(ellipse,rgba(0,245,255,0.1),transparent 70%);top:50%;left:40%;animation-delay:-7s; }
+@keyframes nebulaFloat { from{transform:translate(0,0)scale(1)} to{transform:translate(30px,20px)scale(1.08)} }
+.shooting-star { position:absolute;width:3px;height:3px;background:white;border-radius:50%;box-shadow:0 0 6px 2px white; }
+.shooting-star::after { content:'';position:absolute;top:50%;right:3px;transform:translateY(-50%);width:80px;height:1px;background:linear-gradient(to left,rgba(255,255,255,0.8),transparent); }
+.ss1{top:15%;left:-100px;animation:shoot 5s linear 1s infinite}
+.ss2{top:35%;left:-100px;animation:shoot 7s linear 3s infinite}
+.ss3{top:55%;left:-100px;animation:shoot 6s linear 5.5s infinite}
+@keyframes shoot { 0%{transform:translateX(0)translateY(0);opacity:0}5%{opacity:1}95%{opacity:1}100%{transform:translateX(120vw)translateY(-80px);opacity:0} }
+.planet { position:fixed;border-radius:50%;animation:floatP 10s ease-in-out infinite alternate;pointer-events:none; }
+.planet-1 { width:80px;height:80px;background:radial-gradient(circle at 35% 35%,#FF8C42,#c44400);box-shadow:0 0 30px rgba(255,140,66,0.3);top:12%;right:8%;animation-delay:-2s; }
+.planet-1::after { content:'';position:absolute;top:50%;left:-20px;transform:translateY(-50%);width:120px;height:20px;border:3px solid rgba(255,140,66,0.4);border-radius:50%; }
+.planet-2 { width:50px;height:50px;background:radial-gradient(circle at 35% 35%,#4EFFB4,#009968);box-shadow:0 0 20px rgba(78,255,180,0.3);bottom:20%;left:5%;animation-delay:-5s; }
+.planet-3 { width:35px;height:35px;background:radial-gradient(circle at 35% 35%,#B44EFF,#6600cc);box-shadow:0 0 15px rgba(180,78,255,0.3);top:65%;right:6%;animation-delay:-8s; }
+@keyframes floatP { from{transform:translateY(0)rotate(0)} to{transform:translateY(-20px)rotate(5deg)} }
+
+.container { position:relative;z-index:10;max-width:660px;margin:0 auto;padding:32px 20px 80px; }
+
+.hero { text-align:center;padding:20px 0 36px;position:relative; }
+.hero-badge {
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,233,78,0.15);border:1.5px solid rgba(255,233,78,0.4);
+  border-radius:100px;padding:6px 18px;font-size:11px;font-weight:700;
+  letter-spacing:0.15em;text-transform:uppercase;color:var(--yellow);
+  margin-bottom:20px;animation:badgePulse 2s ease-in-out infinite;
+}
+@keyframes badgePulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,233,78,0.3)}50%{box-shadow:0 0 0 8px rgba(255,233,78,0)} }
+.hero-mascot { font-size:80px;display:block;animation:mascotBounce 2s ease-in-out infinite;filter:drop-shadow(0 10px 30px rgba(255,78,205,0.4));margin-bottom:12px; }
+@keyframes mascotBounce { 0%,100%{transform:translateY(0)rotate(-3deg)}50%{transform:translateY(-12px)rotate(3deg)} }
+h1 {
+  font-family:'Fredoka One',cursive;font-size:clamp(52px,12vw,88px);line-height:0.95;
+  background:linear-gradient(135deg,var(--yellow) 0%,var(--pink) 40%,var(--cyan) 80%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 4px 20px rgba(255,78,205,0.4));letter-spacing:0.02em;margin-bottom:12px;
+}
+.hero-sub { font-size:16px;font-weight:700;color:rgba(255,248,240,0.6);letter-spacing:0.05em; }
+.hero-sub em { color:var(--cyan);font-style:normal; }
+.star-divider { display:flex;align-items:center;justify-content:center;gap:12px;margin:20px 0 28px;font-size:18px;opacity:0.5; }
+
+.marquee-wrap { background:linear-gradient(135deg,rgba(255,78,205,0.15),rgba(0,245,255,0.15));border:1.5px solid rgba(255,255,255,0.1);border-radius:100px;overflow:hidden;padding:10px 0;margin-bottom:28px; }
+.marquee { display:flex;gap:48px;animation:marquee 18s linear infinite;white-space:nowrap; }
+.marquee-item { font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,248,240,0.5); }
+.marquee-item b { color:var(--yellow);font-weight:900; }
+@keyframes marquee { from{transform:translateX(0)}to{transform:translateX(-50%)} }
+
+.stats-row { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px; }
+.stat-bubble { background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:20px;padding:14px 10px;text-align:center;position:relative;overflow:hidden;transition:transform 0.2s; }
+.stat-bubble:hover { transform:translateY(-2px); }
+.stat-bubble::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.04),transparent); }
+.stat-icon { font-size:22px;margin-bottom:4px;display:block; }
+.stat-num { font-family:'Fredoka One',cursive;font-size:26px;display:block; }
+.stat-num.pink{color:var(--pink)}.stat-num.cyan{color:var(--cyan)}.stat-num.yellow{color:var(--yellow)}
+.stat-lbl { font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,248,240,0.4); }
+
+.card { background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:28px;padding:36px 32px;margin-bottom:20px;position:relative;overflow:hidden;backdrop-filter:blur(10px); }
+.card::before { content:'';position:absolute;top:0;left:20px;right:20px;height:2px;background:linear-gradient(90deg,transparent,var(--pink),var(--cyan),transparent);border-radius:0 0 4px 4px; }
+.card-title { font-family:'Fredoka One',cursive;font-size:22px;color:var(--white);margin-bottom:6px;display:flex;align-items:center;gap:10px; }
+.card-sub { font-size:12px;font-weight:700;color:rgba(255,248,240,0.4);letter-spacing:0.06em;margin-bottom:28px; }
+
+.field-grid { display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px; }
+.field { display:flex;flex-direction:column;gap:6px; }
+.field.full { grid-column:1/-1; }
+label { font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,248,240,0.5); }
+input,select { background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;color:var(--white);font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;padding:13px 16px;outline:none;transition:all 0.2s;width:100%; }
+input::placeholder { color:rgba(255,248,240,0.25); }
+input:focus,select:focus { border-color:rgba(0,245,255,0.5);background:rgba(0,245,255,0.06);box-shadow:0 0 0 4px rgba(0,245,255,0.08); }
+select option { background:#1a0533; }
+.check-row { display:flex;gap:12px;align-items:flex-start;margin-top:18px; }
+.check-row input[type="checkbox"] { width:20px;height:20px;flex-shrink:0;margin-top:2px;accent-color:var(--pink);cursor:pointer; }
+.check-row label { font-size:11px;font-weight:600;letter-spacing:0.02em;text-transform:none;color:rgba(255,248,240,0.4);line-height:1.7;opacity:1;cursor:pointer; }
+.check-row label a { color:var(--cyan);text-decoration:none; }
+.error-bubble { background:rgba(255,78,78,0.15);border:1.5px solid rgba(255,78,78,0.35);border-radius:14px;color:#FF7F7F;font-size:12px;font-weight:700;padding:10px 16px;margin-top:14px;display:none;animation:shake 0.4s ease; }
+.error-bubble.show { display:flex;align-items:center;gap:8px; }
+@keyframes shake { 0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)} }
+
+.btn-play { width:100%;margin-top:24px;padding:20px 24px;background:linear-gradient(135deg,var(--pink) 0%,var(--purple) 50%,var(--cyan) 100%);background-size:200% 200%;border:none;border-radius:100px;font-family:'Fredoka One',cursive;font-size:24px;letter-spacing:0.06em;color:white;cursor:pointer;position:relative;overflow:hidden;transition:transform 0.15s,box-shadow 0.2s;animation:gradShift 4s ease infinite,btnPulse 2.5s ease-in-out infinite; }
+@keyframes gradShift { 0%,100%{background-position:0% 50%}50%{background-position:100% 50%} }
+@keyframes btnPulse { 0%,100%{box-shadow:0 8px 40px rgba(255,78,205,0.35),0 0 0 0 rgba(255,78,205,0.2)}50%{box-shadow:0 8px 40px rgba(255,78,205,0.5),0 0 0 12px rgba(255,78,205,0)} }
+.btn-play::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.25),transparent 60%); }
+.btn-play:hover { transform:translateY(-3px)scale(1.02); }
+.btn-play:active { transform:scale(0.97); }
+.btn-play:disabled { opacity:0.35;animation:none;cursor:not-allowed;transform:none; }
+
+.overlay { display:none;position:fixed;inset:0;background:rgba(13,11,46,0.92);z-index:500;align-items:center;justify-content:center;flex-direction:column;gap:20px;backdrop-filter:blur(8px); }
+.overlay.on { display:flex; }
+.loader-emoji { font-size:72px;animation:spinFloat 1s ease-in-out infinite alternate; }
+@keyframes spinFloat { from{transform:rotate(-15deg)scale(0.9)}to{transform:rotate(15deg)scale(1.1)} }
+.loader-text { font-family:'Fredoka One',cursive;font-size:26px;color:var(--white);letter-spacing:0.05em; }
+.loader-dots span { display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--cyan);margin:0 4px;animation:dot 1s ease-in-out infinite; }
+.loader-dots span:nth-child(1){animation-delay:0s;background:var(--pink)}
+.loader-dots span:nth-child(2){animation-delay:0.2s;background:var(--yellow)}
+.loader-dots span:nth-child(3){animation-delay:0.4s;background:var(--cyan)}
+@keyframes dot { 0%,60%,100%{transform:scale(0.8);opacity:0.4}30%{transform:scale(1.3);opacity:1} }
+
+#game-section { display:none; }
+#game-section.show { display:block; }
+.game-header { text-align:center;margin-bottom:28px; }
+.game-header h2 { font-family:'Fredoka One',cursive;font-size:38px;background:linear-gradient(135deg,var(--yellow),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px; }
+.game-header p { font-size:13px;font-weight:700;color:rgba(255,248,240,0.5);letter-spacing:0.08em;text-transform:uppercase; }
+
+.chests-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0; }
+.chest-btn { background:var(--card-bg);border:2px solid var(--card-border);border-radius:24px;padding:24px 16px 20px;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;overflow:hidden;backdrop-filter:blur(8px); }
+.chest-btn::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.05),transparent); }
+.chest-btn:hover:not(:disabled) { transform:translateY(-6px)scale(1.04);border-color:rgba(255,233,78,0.6);box-shadow:0 12px 40px rgba(255,233,78,0.2); }
+.chest-btn:hover:not(:disabled) .chest-icon { animation:chestShake 0.4s ease infinite; }
+@keyframes chestShake { 0%,100%{transform:rotate(-5deg)scale(1.1)}50%{transform:rotate(5deg)scale(1.15)} }
+.chest-icon { font-size:52px;display:block;transition:transform 0.2s;line-height:1; }
+.chest-label { font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,248,240,0.4); }
+.chest-num { position:absolute;top:10px;right:12px;font-size:10px;font-weight:900;color:rgba(255,248,240,0.2);letter-spacing:0.1em; }
+.chest-btn.opened { animation:chestOpen 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;cursor:default; }
+.chest-btn.opened-win { border-color:rgba(78,255,180,0.6);box-shadow:0 0 40px rgba(78,255,180,0.25);background:rgba(78,255,180,0.08); }
+.chest-btn.opened-lose { border-color:rgba(255,78,205,0.15);opacity:0.45; }
+@keyframes chestOpen { 0%{transform:scale(1)}30%{transform:scale(1.15)translateY(-4px)}60%{transform:scale(0.95)}100%{transform:scale(1)} }
+.chest-reveal { font-size:42px;display:none;animation:revealPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+@keyframes revealPop { from{transform:scale(0)rotate(-20deg);opacity:0}to{transform:scale(1)rotate(0);opacity:1} }
+
+#result-section { display:none;animation:fadeSlideUp 0.6s ease forwards; }
+#result-section.show { display:block; }
+@keyframes fadeSlideUp { from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)} }
+.result-card-win { border-radius:28px;padding:44px 32px;text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(78,255,180,0.18) 0%,rgba(78,255,180,0.04) 60%,transparent 100%);border:2px solid rgba(78,255,180,0.35);position:relative;overflow:hidden; }
+.result-card-lose { border-radius:28px;padding:44px 32px;text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(180,78,255,0.12) 0%,transparent 70%);border:2px solid rgba(180,78,255,0.2); }
+.result-emoji { font-size:80px;display:block;margin-bottom:12px;animation:resultEmoji 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;filter:drop-shadow(0 8px 30px rgba(78,255,180,0.5)); }
+@keyframes resultEmoji { from{transform:scale(0)rotate(-30deg);opacity:0}to{transform:scale(1)rotate(0);opacity:1} }
+.result-title { font-family:'Fredoka One',cursive;font-size:52px;line-height:1;margin-bottom:8px;animation:resultTitle 0.5s ease 0.2s both; }
+.win-title { color:var(--green);text-shadow:0 0 40px rgba(78,255,180,0.5); }
+.lose-title { color:rgba(255,248,240,0.45); }
+@keyframes resultTitle { from{opacity:0;transform:scale(0.7)}to{opacity:1;transform:scale(1)} }
+.result-prize-name { font-family:'Fredoka One',cursive;font-size:26px;color:var(--yellow);margin-bottom:8px; }
+.result-msg { font-size:13px;font-weight:600;color:rgba(255,248,240,0.45);line-height:1.7;max-width:380px;margin:0 auto 24px; }
+.claim-code { display:inline-flex;align-items:center;gap:12px;background:rgba(255,233,78,0.12);border:2px dashed rgba(255,233,78,0.45);border-radius:16px;padding:12px 24px;margin-bottom:28px; }
+.claim-code-label { font-size:10px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,233,78,0.6); }
+.claim-code-val { font-family:'Fredoka One',cursive;font-size:22px;color:var(--yellow);letter-spacing:0.2em; }
+.btn-again { background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.15);border-radius:100px;color:rgba(255,248,240,0.6);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:13px 28px;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px; }
+.btn-again:hover { background:rgba(255,255,255,0.12);color:var(--white);border-color:rgba(255,255,255,0.3); }
+
+.prize-card { background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:24px;padding:24px;margin-bottom:16px;backdrop-filter:blur(8px); }
+.prize-card-title { font-family:'Fredoka One',cursive;font-size:16px;color:rgba(255,248,240,0.6);letter-spacing:0.05em;margin-bottom:16px;display:flex;align-items:center;gap:10px; }
+.prize-card-title::after { content:'';flex:1;height:1px;background:rgba(255,255,255,0.07); }
+.prize-row { display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05); }
+.prize-row:last-child { border-bottom:none;padding-bottom:0; }
+.prize-row-icon { font-size:28px;flex-shrink:0; }
+.prize-row-info { flex:1; }
+.prize-row-name { font-size:14px;font-weight:800;color:var(--white); }
+.prize-row-odds { font-size:11px;font-weight:600;color:rgba(255,248,240,0.35);margin-top:2px; }
+.prize-chip { font-size:11px;font-weight:800;padding:4px 12px;border-radius:100px;letter-spacing:0.06em; }
+.chip-green{background:rgba(78,255,180,0.15);color:var(--green)}
+.chip-yellow{background:rgba(255,233,78,0.15);color:var(--yellow)}
+.chip-pink{background:rgba(255,78,205,0.15);color:var(--pink)}
+.chip-cyan{background:rgba(0,245,255,0.15);color:var(--cyan)}
+
+.legal { font-size:10px;font-weight:600;color:rgba(255,248,240,0.2);line-height:1.8;letter-spacing:0.02em;border-top:1px solid rgba(255,255,255,0.06);padding-top:24px;margin-top:8px; }
+
+.confetti-wrap { position:fixed;inset:0;pointer-events:none;z-index:400;overflow:hidden; }
+.cp { position:absolute;top:-20px;border-radius:3px;animation:cpFall linear forwards; }
+@keyframes cpFall { 0%{transform:translateY(0)rotate(0deg)scale(1);opacity:1}80%{opacity:1}100%{transform:translateY(105vh)rotate(900deg)scale(0.5);opacity:0} }
+
+@media(max-width:520px){
+  .field-grid{grid-template-columns:1fr}
+  .chests-grid{gap:10px}
+  .chest-btn{padding:16px 10px 14px}
+  .chest-icon{font-size:38px}
+  .card{padding:24px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="space-bg">
+  <div class="stars-layer"></div>
+  <div class="nebula nebula-1"></div>
+  <div class="nebula nebula-2"></div>
+  <div class="nebula nebula-3"></div>
+  <div class="shooting-star ss1"></div>
+  <div class="shooting-star ss2"></div>
+  <div class="shooting-star ss3"></div>
+</div>
+
+<div class="planet planet-1"></div>
+<div class="planet planet-2"></div>
+<div class="planet planet-3"></div>
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<div class="overlay" id="overlay">
+  <div class="loader-emoji">🛸</div>
+  <div class="loader-text">Scanning the galaxy...</div>
+  <div class="loader-dots"><span></span><span></span><span></span></div>
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-badge">🌠 Instant Win Sweepstakes 🌠</div>
+    <span class="hero-mascot">🧑‍🚀</span>
+    <h1>Cosmic<br>Treasure<br>Hunt!</h1>
+    <div class="hero-sub">Pick a chest · Win <em>out-of-this-world</em> prizes</div>
+    <div class="star-divider">✦ &nbsp; ✦ &nbsp; ✦ &nbsp; ✦ &nbsp; ✦</div>
+  </div>
+
+  <div class="marquee-wrap">
+    <div class="marquee">
+      <span class="marquee-item">🚀 Grand Prize <b>$10,000 CASH</b></span>
+      <span class="marquee-item">🌟 Odds <b>1 in 5</b> Win Something!</span>
+      <span class="marquee-item">💎 Play Once <b>Per Day</b></span>
+      <span class="marquee-item">🪐 Must Be <b>18+ US Resident</b></span>
+      <span class="marquee-item">🎁 No Purchase <b>Necessary</b></span>
+      <span class="marquee-item">🚀 Grand Prize <b>$10,000 CASH</b></span>
+      <span class="marquee-item">🌟 Odds <b>1 in 5</b> Win Something!</span>
+      <span class="marquee-item">💎 Play Once <b>Per Day</b></span>
+      <span class="marquee-item">🪐 Must Be <b>18+ US Resident</b></span>
+      <span class="marquee-item">🎁 No Purchase <b>Necessary</b></span>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-bubble">
+      <span class="stat-icon">🚀</span>
+      <span class="stat-num pink" id="sSent">9,274</span>
+      <div class="stat-lbl">Explorers</div>
+    </div>
+    <div class="stat-bubble">
+      <span class="stat-icon">🏆</span>
+      <span class="stat-num yellow" id="sWins">1,841</span>
+      <div class="stat-lbl">Winners</div>
+    </div>
+    <div class="stat-bubble">
+      <span class="stat-icon">💎</span>
+      <span class="stat-num cyan" id="sPrizes">4,127</span>
+      <div class="stat-lbl">Prizes Left</div>
+    </div>
+  </div>
+
+  <div class="card" id="entryCard">
+    <div class="card-title">🗺️ Claim Your Entry</div>
+    <div class="card-sub">Fill in the details below to start your adventure</div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>First Name</label>
+        <input type="text" id="firstName" placeholder="Cosmo">
+      </div>
+      <div class="field">
+        <label>Last Name</label>
+        <input type="text" id="lastName" placeholder="Explorer">
+      </div>
+    </div>
+    <div class="field-grid">
+      <div class="field full">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="cosmo@galaxy.com">
+      </div>
+    </div>
+    <div class="field-grid">
+      <div class="field">
+        <label>Date of Birth</label>
+        <input type="date" id="dob">
+      </div>
+      <div class="field">
+        <label>State</label>
+        <select id="state">
+          <option value="">Pick your planet 🌍</option>
+          <option>Alabama</option><option>Alaska</option><option>Arizona</option>
+          <option>Arkansas</option><option>California</option><option>Colorado</option>
+          <option>Connecticut</option><option>Delaware</option><option>Florida</option>
+          <option>Georgia</option><option>Hawaii</option><option>Idaho</option>
+          <option>Illinois</option><option>Indiana</option><option>Iowa</option>
+          <option>Kansas</option><option>Kentucky</option><option>Louisiana</option>
+          <option>Maine</option><option>Maryland</option><option>Massachusetts</option>
+          <option>Michigan</option><option>Minnesota</option><option>Mississippi</option>
+          <option>Missouri</option><option>Montana</option><option>Nebraska</option>
+          <option>Nevada</option><option>New Hampshire</option><option>New Jersey</option>
+          <option>New Mexico</option><option>New York</option><option>North Carolina</option>
+          <option>North Dakota</option><option>Ohio</option><option>Oklahoma</option>
+          <option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option>
+          <option>South Carolina</option><option>South Dakota</option><option>Tennessee</option>
+          <option>Texas</option><option>Utah</option><option>Vermont</option>
+          <option>Virginia</option><option>Washington</option><option>West Virginia</option>
+          <option>Wisconsin</option><option>Wyoming</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="check-row">
+      <input type="checkbox" id="agree">
+      <label for="agree">I'm 18+ and a legal US resident. I agree to the <a href="#">Official Rules</a> — no purchase necessary to enter or win this free sweepstakes!</label>
+    </div>
+
+    <div class="error-bubble" id="errMsg">⚠️ <span id="errText">Please fill in all fields.</span></div>
+    <button class="btn-play" id="playBtn" onclick="handleEnter()">🚀 Launch Into Space — Play Now!</button>
+  </div>
+
+  <div id="game-section">
+    <div class="card">
+      <div class="game-header">
+        <h2>🪐 Choose Your Treasure Chest!</h2>
+        <p>One chest holds your cosmic prize — pick wisely!</p>
+      </div>
+      <div class="chests-grid" id="chestsGrid">
+        <button class="chest-btn" onclick="openChest(this,0)">
+          <span class="chest-num">#1</span>
+          <span class="chest-icon" id="ci0">🪙</span>
+          <span class="chest-label">Chest A</span>
+          <span class="chest-reveal" id="cr0"></span>
+        </button>
+        <button class="chest-btn" onclick="openChest(this,1)">
+          <span class="chest-num">#2</span>
+          <span class="chest-icon" id="ci1">🧲</span>
+          <span class="chest-label">Chest B</span>
+          <span class="chest-reveal" id="cr1"></span>
+        </button>
+        <button class="chest-btn" onclick="openChest(this,2)">
+          <span class="chest-num">#3</span>
+          <span class="chest-icon" id="ci2">🔮</span>
+          <span class="chest-label">Chest C</span>
+          <span class="chest-reveal" id="cr2"></span>
+        </button>
+        <button class="chest-btn" onclick="openChest(this,3)">
+          <span class="chest-num">#4</span>
+          <span class="chest-icon" id="ci3">🪐</span>
+          <span class="chest-label">Chest D</span>
+          <span class="chest-reveal" id="cr3"></span>
+        </button>
+        <button class="chest-btn" onclick="openChest(this,4)">
+          <span class="chest-num">#5</span>
+          <span class="chest-icon" id="ci4">⭐</span>
+          <span class="chest-label">Chest E</span>
+          <span class="chest-reveal" id="cr4"></span>
+        </button>
+        <button class="chest-btn" onclick="openChest(this,5)">
+          <span class="chest-num">#6</span>
+          <span class="chest-icon" id="ci5">🌀</span>
+          <span class="chest-label">Chest F</span>
+          <span class="chest-reveal" id="cr5"></span>
+        </button>
+      </div>
+    </div>
+    <div id="result-section"></div>
+  </div>
+
+  <div class="prize-card">
+    <div class="prize-card-title">🎁 Prizes Available</div>
+    <div class="prize-row">
+      <span class="prize-row-icon">🚀</span>
+      <div class="prize-row-info">
+        <div class="prize-row-name">Grand Prize — $10,000 Cash</div>
+        <div class="prize-row-odds">Odds: 1 in 5,000 · 2 remaining</div>
+      </div>
+      <span class="prize-chip chip-green">EPIC</span>
+    </div>
+    <div class="prize-row">
+      <span class="prize-row-icon">💎</span>
+      <div class="prize-row-info">
+        <div class="prize-row-name">$500 Gift Card</div>
+        <div class="prize-row-odds">Odds: 1 in 500 · 18 remaining</div>
+      </div>
+      <span class="prize-chip chip-yellow">RARE</span>
+    </div>
+    <div class="prize-row">
+      <span class="prize-row-icon">🌟</span>
+      <div class="prize-row-info">
+        <div class="prize-row-name">$50 Gift Card</div>
+        <div class="prize-row-odds">Odds: 1 in 100 · 248 remaining</div>
+      </div>
+      <span class="prize-chip chip-pink">UNCOMMON</span>
+    </div>
+    <div class="prize-row">
+      <span class="prize-row-icon">🎫</span>
+      <div class="prize-row-info">
+        <div class="prize-row-name">Bonus Entry Token</div>
+        <div class="prize-row-odds">Odds: 1 in 5 · 4,859 remaining</div>
+      </div>
+      <span class="prize-chip chip-cyan">COMMON</span>
+    </div>
+  </div>
+
+  <div class="legal">
+    NO PURCHASE NECESSARY. Open to legal US residents of all 50 states and D.C., 18 years of age or older. Void where prohibited. Sweepstakes ends 12/31/2025 at 11:59 PM ET. Limit one (1) entry per person per day. Odds of winning depend on the number of eligible entries received and total prizes available. Sponsor not responsible for technical errors; decisions are final. Potential winners subject to verification of eligibility. Winners must respond within 3 days of notification. Free alternative method of entry: mail a 3×5 card with name, address, and DOB to Cosmic Treasure Hunt Sweepstakes, PO Box 1000, New York, NY 10001. Full Official Rules available upon request.
+  </div>
+
+</div>
+
+<script>
+const PRIZES_WIN = [
+  { emoji:'🚀', title:'GRAND PRIZE!', name:'$10,000 Cash Award', msg:"Out of this world! You've landed the ultimate treasure. A verification email is on its way — you have 3 days to claim.", code:true },
+  { emoji:'💎', title:'WINNER!',      name:'$500 Gift Card',    msg:"Stellar find, Space Explorer! Your prize is being verified. Check your email within 48 hours to claim your reward.", code:true },
+  { emoji:'🌟', title:'YOU WON!',    name:'$50 Gift Card',     msg:"Nice haul, Cosmonaut! A verification email is heading your way. Respond within 3 days to secure your prize.", code:true },
+  { emoji:'🎫', title:'BONUS!',      name:'Extra Entry Token — Play Again Tomorrow!', msg:"Lucky star alignment! You've earned an extra spin. Come back tomorrow for another shot at the big prizes!", code:false },
+];
+
+let outcome = null;
+let chestPicked = false;
+
+function determineOutcome() {
+  const now = new Date();
+  const seed = (now.getSeconds() + now.getMilliseconds() + now.getMinutes() * 77) % 10000;
+  const r = ((seed * 1664525 + 1013904223) % 2147483648) / 2147483648;
+  if (r < 0.0002) return { win:true, prize:PRIZES_WIN[0] };
+  if (r < 0.002)  return { win:true, prize:PRIZES_WIN[1] };
+  if (r < 0.05)   return { win:true, prize:PRIZES_WIN[2] };
+  if (r < 0.2)    return { win:true, prize:PRIZES_WIN[3] };
+  return { win:false };
+}
+
+function validate() {
+  const fn = document.getElementById('firstName').value.trim();
+  const ln = document.getElementById('lastName').value.trim();
+  const em = document.getElementById('email').value.trim();
+  const dob = document.getElementById('dob').value;
+  const st = document.getElementById('state').value;
+  const ag = document.getElementById('agree').checked;
+  const err = document.getElementById('errMsg');
+  const errTxt = document.getElementById('errText');
+
+  if (!fn || !ln || !em || !dob || !st || !ag) {
+    errTxt.textContent = !ag ? 'Please agree to the Official Rules to continue.' : 'Please fill in all fields to launch!';
+    err.classList.add('show'); return false;
+  }
+  if (new Date().getFullYear() - new Date(dob).getFullYear() < 18) {
+    errTxt.textContent = 'You must be 18 or older to enter. 🚀';
+    err.classList.add('show'); return false;
+  }
+  if (!em.includes('@') || !em.includes('.')) {
+    errTxt.textContent = 'Please enter a valid email address.';
+    err.classList.add('show'); return false;
+  }
+  err.classList.remove('show'); return true;
+}
+
+function handleEnter() {
+  if (!validate()) return;
+  outcome = determineOutcome();
+  document.getElementById('overlay').classList.add('on');
+  setTimeout(() => {
+    document.getElementById('overlay').classList.remove('on');
+    showGame();
+  }, 2200);
+}
+
+function showGame() {
+  document.getElementById('entryCard').style.display = 'none';
+  const gs = document.getElementById('game-section');
+  gs.classList.add('show');
+  gs.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function openChest(btn, idx) {
+  if (chestPicked) return;
+  chestPicked = true;
+  document.querySelectorAll('.chest-btn').forEach(b => b.disabled = true);
+
+  btn.classList.add('opened');
+  const ci = document.getElementById('ci' + idx);
+  const cr = document.getElementById('cr' + idx);
+  const winIcons = ['💰','💎','🌟','🎁','🏆','✨'];
+  const loseIcons = ['🌑','🪨','💨','🌫️','🌒','🕳️'];
+
+  setTimeout(() => {
+    if (outcome.win) {
+      ci.style.display = 'none';
+      cr.textContent = winIcons[Math.floor(Math.random() * winIcons.length)];
+      cr.style.display = 'block';
+      btn.classList.add('opened-win');
+    } else {
+      ci.textContent = loseIcons[idx % loseIcons.length];
+      btn.classList.add('opened-lose');
+    }
+
+    // reveal remaining chests
+    setTimeout(() => {
+      document.querySelectorAll('.chest-btn').forEach((b, i) => {
+        if (i === idx) return;
+        const c = document.getElementById('ci' + i);
+        setTimeout(() => { c.textContent = loseIcons[i % loseIcons.length]; b.classList.add('opened-lose'); }, i * 100);
+      });
+    }, 300);
+
+    setTimeout(() => showResult(), 1300);
+  }, 350);
+}
+
+function showResult() {
+  const rs = document.getElementById('result-section');
+  rs.classList.add('show');
+
+  if (outcome.win) {
+    const p = outcome.prize;
+    const code = p.code ? makeCode() : null;
+    rs.innerHTML = `
+      <div class="result-card-win">
+        <span class="result-emoji">${p.emoji}</span>
+        <div class="result-title win-title">${p.title}</div>
+        <div class="result-prize-name">${p.name}</div>
+        ${code ? `<div class="claim-code"><div><div class="claim-code-label">Claim Code</div><div class="claim-code-val">${code}</div></div></div>` : ''}
+        <div class="result-msg">${p.msg}</div>
+        <button class="btn-again" onclick="location.reload()">🌙 Come Back Tomorrow</button>
+      </div>`;
+    setTimeout(launchConfetti, 200);
+  } else {
+    rs.innerHTML = `
+      <div class="result-card-lose">
+        <span class="result-emoji" style="filter:none">🌌</span>
+        <div class="result-title lose-title">Not This Time...</div>
+        <div class="result-prize-name" style="color:rgba(255,248,240,0.4);font-size:18px;font-family:'Nunito',sans-serif;font-weight:700">The treasure floated away into the cosmos.</div>
+        <div class="result-msg">Every explorer misses sometimes! Come back tomorrow — the galaxy resets at midnight and a new treasure awaits. <strong style="color:#B44EFF">1 in 5 players wins a prize!</strong></div>
+        <button class="btn-again" onclick="location.reload()">🚀 Try Again Tomorrow</button>
+      </div>`;
+  }
+  rs.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+function makeCode() {
+  const ch = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c = '';
+  for (let i = 0; i < 12; i++) {
+    if (i && i % 4 === 0) c += '-';
+    c += ch[Math.floor(Math.random() * ch.length)];
+  }
+  return c;
+}
+
+function launchConfetti() {
+  const colors = ['#FF4ECD','#00F5FF','#FFE94E','#4EFFB4','#FF8C42','#B44EFF','#ffffff'];
+  const wrap = document.getElementById('confettiWrap');
+  for (let i = 0; i < 150; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'cp';
+      const size = Math.random() * 10 + 5;
+      p.style.cssText = `left:${Math.random()*100}vw;width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>0.5?'50%':'3px'};animation-duration:${Math.random()*2.5+2}s;animation-delay:${Math.random()*0.8}s;transform:rotate(${Math.random()*360}deg)`;
+      wrap.appendChild(p);
+      setTimeout(() => p.remove(), 4000);
+    }, i * 15);
+  }
+}
+
+setInterval(() => {
+  const el = document.getElementById('sSent');
+  if (el && Math.random() > 0.6) { const v = parseInt(el.textContent.replace(/,/g,'')); el.textContent = (v+1).toLocaleString(); }
+}, 3000);
+</script>
+</body>
+</html>
