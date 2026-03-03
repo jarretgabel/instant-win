@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COSMO SPIN — Space Carnival Instant Win</title>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon-pink: #ff2d78;
+    --neon-cyan: #00f5ff;
+    --neon-yellow: #ffe600;
+    --neon-green: #39ff14;
+    --neon-purple: #bf00ff;
+    --neon-orange: #ff6b00;
+    --dark: #05020f;
+    --dark2: #0d0820;
+    --star-color: rgba(255,255,255,0.8);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 20px; height: 20px;
+    border: 2px solid var(--neon-cyan);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s, background 0.1s;
+    mix-blend-mode: screen;
+  }
+  .cursor-dot {
+    width: 6px; height: 6px;
+    background: var(--neon-pink);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Stars */
+  .stars {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur) ease-in-out infinite var(--delay);
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.4); }
+  }
+
+  /* Floating planets */
+  .planets {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .planet {
+    position: absolute;
+    border-radius: 50%;
+    animation: float var(--fdur) ease-in-out infinite var(--fdelay);
+    opacity: 0.3;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+  }
+
+  /* Scanlines */
+  .scanlines {
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Main container */
+  .container {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 10px;
+    animation: headerIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  @keyframes headerIn {
+    from { opacity: 0; transform: translateY(-40px) scale(0.8); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .tagline {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    text-shadow: 0 0 10px var(--neon-cyan);
+  }
+
+  .title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(36px, 8vw, 72px);
+    font-weight: 900;
+    color: var(--neon-yellow);
+    text-shadow:
+      0 0 10px var(--neon-yellow),
+      0 0 30px var(--neon-yellow),
+      0 0 60px rgba(255,230,0,0.5),
+      4px 4px 0 var(--neon-orange);
+    letter-spacing: 4px;
+    line-height: 1;
+    animation: titlePulse 2s ease-in-out infinite;
+  }
+  @keyframes titlePulse {
+    0%, 100% { text-shadow: 0 0 10px var(--neon-yellow), 0 0 30px var(--neon-yellow), 0 0 60px rgba(255,230,0,0.5), 4px 4px 0 var(--neon-orange); }
+    50% { text-shadow: 0 0 20px var(--neon-yellow), 0 0 60px var(--neon-yellow), 0 0 100px rgba(255,230,0,0.8), 4px 4px 0 var(--neon-orange); }
+  }
+
+  .subtitle {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(14px, 3vw, 20px);
+    color: var(--neon-pink);
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px var(--neon-pink);
+    margin-top: 4px;
+  }
+
+  /* Prize banner */
+  .prize-marquee {
+    width: 100%;
+    max-width: 700px;
+    overflow: hidden;
+    background: linear-gradient(90deg, transparent, rgba(255,45,120,0.15), transparent);
+    border-top: 1px solid var(--neon-pink);
+    border-bottom: 1px solid var(--neon-pink);
+    padding: 6px 0;
+    margin: 10px 0 16px;
+    position: relative;
+  }
+  .prize-marquee::before, .prize-marquee::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 40px;
+    z-index: 2;
+  }
+  .prize-marquee::before { left: 0; background: linear-gradient(90deg, var(--dark), transparent); }
+  .prize-marquee::after { right: 0; background: linear-gradient(-90deg, var(--dark), transparent); }
+  .marquee-inner {
+    display: flex;
+    gap: 40px;
+    animation: marquee 14s linear infinite;
+    white-space: nowrap;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--neon-yellow);
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px var(--neon-yellow);
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .marquee-item { display: inline-flex; align-items: center; gap: 10px; }
+  .marquee-star { color: var(--neon-pink); }
+
+  /* Main game area */
+  .game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 700px;
+    animation: fadeUp 0.6s 0.3s both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Entry form */
+  .entry-card {
+    background: linear-gradient(135deg, rgba(13,8,32,0.95), rgba(5,2,15,0.95));
+    border: 1px solid rgba(0,245,255,0.3);
+    border-radius: 16px;
+    padding: 24px 28px;
+    width: 100%;
+    box-shadow:
+      0 0 40px rgba(0,245,255,0.08),
+      inset 0 0 40px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+  .entry-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(0,245,255,0.03) 60deg, transparent 120deg);
+    animation: rotateGlow 8s linear infinite;
+  }
+  @keyframes rotateGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .form-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--neon-cyan);
+    text-align: center;
+    margin-bottom: 16px;
+    text-shadow: 0 0 10px var(--neon-cyan);
+  }
+
+  .form-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .form-group {
+    flex: 1;
+    min-width: 140px;
+    position: relative;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: rgba(0,245,255,0.6);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .form-group input, .form-group select {
+    width: 100%;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(0,245,255,0.25);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: white;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: none;
+  }
+  .form-group input::placeholder { color: rgba(255,255,255,0.25); }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0,245,255,0.2), inset 0 0 10px rgba(0,245,255,0.05);
+  }
+  .form-group select { appearance: none; }
+  .form-group select option { background: #0d0820; }
+
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .checkbox-row input[type="checkbox"] {
+    width: 16px; height: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    accent-color: var(--neon-pink);
+    cursor: none;
+  }
+  .checkbox-row label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.5;
+    cursor: none;
+  }
+  .checkbox-row a { color: var(--neon-cyan); text-decoration: none; }
+
+  /* SPIN BUTTON */
+  .spin-btn {
+    width: 100%;
+    padding: 18px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    cursor: none;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow:
+      0 0 20px rgba(255,45,120,0.5),
+      0 0 60px rgba(255,45,120,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.2);
+    text-transform: uppercase;
+  }
+  .spin-btn:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .spin-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.4s;
+  }
+  .spin-btn:hover::before { left: 100%; }
+  .spin-btn:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 0 30px rgba(255,45,120,0.7), 0 0 80px rgba(255,45,120,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .spin-btn:active { transform: translateY(1px) scale(0.99); }
+
+  /* WHEEL */
+  .wheel-section {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+  }
+  .wheel-section.visible { display: flex; }
+
+  .wheel-container {
+    position: relative;
+    width: min(360px, 90vw);
+    height: min(360px, 90vw);
+  }
+
+  .wheel-arrow {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    filter: drop-shadow(0 0 8px var(--neon-yellow));
+    font-size: 28px;
+  }
+
+  canvas#wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 20px rgba(0,245,255,0.4));
+  }
+
+  .wheel-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #1a0a30, #05020f);
+    border: 3px solid var(--neon-yellow);
+    box-shadow: 0 0 15px var(--neon-yellow), inset 0 0 10px rgba(255,230,0,0.2);
+    z-index: 15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  /* Spin again btn */
+  .spin-again-btn {
+    display: none;
+    padding: 12px 32px;
+    border: 2px solid var(--neon-cyan);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--neon-cyan);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: none;
+    transition: all 0.2s;
+    text-shadow: 0 0 8px var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0,245,255,0.2);
+  }
+  .spin-again-btn:hover {
+    background: rgba(0,245,255,0.1);
+    box-shadow: 0 0 25px rgba(0,245,255,0.4);
+    transform: scale(1.03);
+  }
+
+  /* Result overlay */
+  .result-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5,2,15,0.92);
+    backdrop-filter: blur(8px);
+  }
+  .result-overlay.show { display: flex; }
+
+  .result-card {
+    max-width: 480px;
+    width: 90%;
+    padding: 40px 36px;
+    border-radius: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: resultPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  @keyframes resultPop {
+    from { opacity: 0; transform: scale(0.5) rotate(-5deg); }
+    to { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+
+  .result-card.win {
+    background: linear-gradient(135deg, #0d0820, #1a0030);
+    border: 2px solid var(--neon-green);
+    box-shadow: 0 0 60px rgba(57,255,20,0.3), 0 0 120px rgba(57,255,20,0.1);
+  }
+  .result-card.lose {
+    background: linear-gradient(135deg, #0d0820, #200010);
+    border: 2px solid var(--neon-pink);
+    box-shadow: 0 0 40px rgba(255,45,120,0.2);
+  }
+
+  .result-emoji {
+    font-size: 64px;
+    margin-bottom: 12px;
+    display: block;
+    animation: bounceIn 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  @keyframes bounceIn {
+    from { opacity: 0; transform: scale(0) rotate(-20deg); }
+    to { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+
+  .result-headline {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(24px, 6vw, 36px);
+    font-weight: 900;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+  .win .result-headline {
+    color: var(--neon-green);
+    text-shadow: 0 0 20px var(--neon-green), 0 0 40px var(--neon-green);
+    animation: glitch 2s infinite;
+  }
+  @keyframes glitch {
+    0%, 90%, 100% { text-shadow: 0 0 20px var(--neon-green), 0 0 40px var(--neon-green); transform: none; }
+    91% { text-shadow: 3px 0 var(--neon-cyan), -3px 0 var(--neon-pink), 0 0 40px var(--neon-green); transform: skewX(1deg); }
+    93% { text-shadow: -3px 0 var(--neon-cyan), 3px 0 var(--neon-pink), 0 0 40px var(--neon-green); transform: skewX(-1deg); }
+    95% { text-shadow: 0 0 20px var(--neon-green), 0 0 40px var(--neon-green); transform: none; }
+  }
+  .lose .result-headline { color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink); }
+
+  .result-prize {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(20px, 4vw, 28px);
+    color: var(--neon-yellow);
+    text-shadow: 0 0 15px var(--neon-yellow);
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .result-msg {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .result-msg strong { color: rgba(255,255,255,0.8); }
+
+  .result-time {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 20px;
+  }
+
+  .result-close {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: none;
+    transition: all 0.2s;
+  }
+  .win .result-close {
+    background: var(--neon-green);
+    color: var(--dark);
+    box-shadow: 0 0 20px rgba(57,255,20,0.5);
+  }
+  .win .result-close:hover { box-shadow: 0 0 35px rgba(57,255,20,0.8); transform: scale(1.04); }
+  .lose .result-close {
+    background: rgba(255,45,120,0.2);
+    color: var(--neon-pink);
+    border: 1px solid var(--neon-pink);
+  }
+  .lose .result-close:hover { background: rgba(255,45,120,0.35); transform: scale(1.04); }
+
+  /* Confetti canvas */
+  canvas#confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+  }
+
+  /* Odds ticker */
+  .odds-bar {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  .odds-bar span { color: var(--neon-cyan); }
+
+  /* Error msg */
+  .error-msg {
+    font-size: 11px;
+    color: var(--neon-orange);
+    text-align: center;
+    min-height: 16px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px var(--neon-orange);
+  }
+
+  /* Neon decorative line */
+  .neon-line {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--neon-purple), var(--neon-cyan), var(--neon-purple), transparent);
+    box-shadow: 0 0 8px var(--neon-cyan);
+  }
+
+  /* Floating particles */
+  .particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 5;
+    border-radius: 50%;
+    animation: particleDrift var(--pdur) linear infinite var(--pdelay);
+    opacity: 0;
+  }
+  @keyframes particleDrift {
+    0% { opacity: 0; transform: translateY(100vh) rotate(0deg); }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.4; }
+    100% { opacity: 0; transform: translateY(-100px) rotate(720deg); }
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .entry-card { padding: 18px; }
+    .form-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- Starfield -->
+<div class="stars" id="stars"></div>
+<div class="planets" id="planets"></div>
+<div class="scanlines"></div>
+
+<canvas id="confetti"></canvas>
+
+<!-- Result Overlay -->
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-card" id="resultCard">
+    <span class="result-emoji" id="resultEmoji">🎉</span>
+    <div class="result-headline" id="resultHeadline">YOU WIN!</div>
+    <div class="result-prize" id="resultPrize"></div>
+    <div class="result-time" id="resultTime"></div>
+    <div class="result-msg" id="resultMsg"></div>
+    <button class="result-close" id="resultClose" onclick="closeResult()">CLOSE</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <div class="tagline">⚡ Intergalactic Sweepstakes ⚡</div>
+    <div class="title">COSMO SPIN</div>
+    <div class="subtitle">🚀 The Space Carnival Instant Win 🪐</div>
+  </div>
+
+  <div class="prize-marquee">
+    <div class="marquee-inner" id="marqueeInner"></div>
+  </div>
+
+  <div class="game-area">
+    <!-- Entry Form -->
+    <div class="entry-card" id="entryCard">
+      <div class="form-title">◈ ENTER YOUR COORDINATES ◈</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="fname" placeholder="Zara" maxlength="30">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="lname" placeholder="Nova" maxlength="30">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="email" placeholder="you@galaxy.com" maxlength="80">
+        </div>
+        <div class="form-group" style="flex: 0 0 130px; min-width: 100px;">
+          <label>Age</label>
+          <select id="age">
+            <option value="">Select...</option>
+            <option value="18-24">18–24</option>
+            <option value="25-34">25–34</option>
+            <option value="35-44">35–44</option>
+            <option value="45-54">45–54</option>
+            <option value="55+">55+</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>State / Region</label>
+          <select id="state">
+            <option value="">Select your state...</option>
+            <option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option>
+            <option>California</option><option>Colorado</option><option>Connecticut</option><option>Delaware</option>
+            <option>Florida</option><option>Georgia</option><option>Hawaii</option><option>Idaho</option>
+            <option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option>
+            <option>Kentucky</option><option>Louisiana</option><option>Maine</option><option>Maryland</option>
+            <option>Massachusetts</option><option>Michigan</option><option>Minnesota</option><option>Mississippi</option>
+            <option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option>
+            <option>New Hampshire</option><option>New Jersey</option><option>New Mexico</option><option>New York</option>
+            <option>North Carolina</option><option>North Dakota</option><option>Ohio</option><option>Oklahoma</option>
+            <option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option><option>South Carolina</option>
+            <option>South Dakota</option><option>Tennessee</option><option>Texas</option><option>Utah</option>
+            <option>Vermont</option><option>Virginia</option><option>Washington</option><option>West Virginia</option>
+            <option>Wisconsin</option><option>Wyoming</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="terms">
+        <label for="terms">I am a legal US resident (18+), agree to the <a href="#">Official Rules</a>, and understand this is a free sweepstakes. One entry per person per day. Void where prohibited. Winning subject to eligibility verification. <a href="#">Privacy Policy</a>.</label>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <button class="spin-btn" id="spinBtn" onclick="startGame()">
+        🚀 SPIN THE WHEEL 🚀
+      </button>
+    </div>
+
+    <!-- Wheel Section -->
+    <div class="wheel-section" id="wheelSection">
+      <div class="wheel-container">
+        <div class="wheel-arrow">▼</div>
+        <canvas id="wheel" width="400" height="400"></canvas>
+        <div class="wheel-center">✦</div>
+      </div>
+      <div class="odds-bar">Overall odds of winning: <span>1 in 5</span> &nbsp;|&nbsp; Limit: <span>1 entry / day</span></div>
+      <button class="spin-again-btn" id="spinAgainBtn" onclick="resetGame()">↺ PLAY AGAIN TOMORROW</button>
+    </div>
+
+    <div class="neon-line"></div>
+    <div class="odds-bar" style="padding-bottom:16px;">
+      No purchase necessary · Open to US residents 18+ · Void where prohibited<br>
+      Winning subject to sponsor verification · Prizes must be claimed within 3 days
+    </div>
+  </div>
+</div>
+
+<script>
+// ====== CURSOR ======
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursorDot');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = (e.clientX - 10) + 'px';
+  cursor.style.top = (e.clientY - 10) + 'px';
+  cursorDot.style.left = e.clientX + 'px';
+  cursorDot.style.top = e.clientY + 'px';
+});
+document.addEventListener('mousedown', () => { cursor.style.transform = 'scale(0.7)'; cursor.style.background = 'rgba(255,45,120,0.3)'; });
+document.addEventListener('mouseup', () => { cursor.style.transform = 'scale(1)'; cursor.style.background = 'transparent'; });
+
+// ====== STARS ======
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 180; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const sz = Math.random() * 2.5 + 0.5;
+  s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${2+Math.random()*4}s;--delay:${Math.random()*4}s;`;
+  starsEl.appendChild(s);
+}
+
+// ====== PLANETS ======
+const planetsEl = document.getElementById('planets');
+const planetData = [
+  { size: 80, color: '#bf00ff', x: 8, y: 15 },
+  { size: 55, color: '#00f5ff', x: 88, y: 70 },
+  { size: 40, color: '#ff6b00', x: 5, y: 75 },
+  { size: 65, color: '#ff2d78', x: 85, y: 20 },
+];
+planetData.forEach((p, i) => {
+  const el = document.createElement('div');
+  el.className = 'planet';
+  el.style.cssText = `width:${p.size}px;height:${p.size}px;left:${p.x}%;top:${p.y}%;background:radial-gradient(circle at 35% 35%, rgba(255,255,255,0.1), ${p.color});--fdur:${6+i*2}s;--fdelay:${i*1.5}s;`;
+  planetsEl.appendChild(el);
+});
+
+// ====== FLOATING PARTICLES ======
+const particleColors = ['#ff2d78','#00f5ff','#ffe600','#39ff14','#bf00ff'];
+for (let i = 0; i < 20; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const sz = Math.random() * 4 + 2;
+  p.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;background:${particleColors[Math.floor(Math.random()*5)]};--pdur:${8+Math.random()*12}s;--pdelay:${Math.random()*8}s;`;
+  document.body.appendChild(p);
+}
+
+// ====== MARQUEE ======
+const prizes = ['🏆 $1,000 CASH','🚀 SPACE HOODIE','🪐 GALAXY WATCH','💎 CRYPTO BUNDLE','🎮 GAMING RIG','🌟 CONCERT TIX','🛸 DRONE KIT','⚡ POWER STATION'];
+const mi = document.getElementById('marqueeInner');
+const doubled = [...prizes, ...prizes];
+mi.innerHTML = doubled.map(p => `<span class="marquee-item"><span class="marquee-star">★</span>${p}<span class="marquee-star">★</span></span>`).join('');
+
+// ====== WHEEL CONFIG ======
+const segments = [
+  { label: 'TRY AGAIN', color: '#1a0535', textColor: '#ff2d78', icon: '✗', isWin: false },
+  { label: '$500 CASH', color: '#0d2b00', textColor: '#39ff14', icon: '💰', isWin: true, prize: '$500 Cash Prize' },
+  { label: 'BETTER LUCK', color: '#1a0535', textColor: '#bf00ff', icon: '✗', isWin: false },
+  { label: 'GALAXY WATCH', color: '#0a1a30', textColor: '#00f5ff', icon: '⌚', isWin: true, prize: 'Galaxy Watch 7' },
+  { label: 'NO WIN', color: '#1a0535', textColor: '#ff6b00', icon: '✗', isWin: false },
+  { label: '$100 CASH', color: '#0d2b00', textColor: '#ffe600', icon: '💵', isWin: true, prize: '$100 Cash Prize' },
+  { label: 'NOT TODAY', color: '#1a0535', textColor: '#ff2d78', icon: '✗', isWin: false },
+  { label: 'GAMING RIG', color: '#0a1a30', textColor: '#bf00ff', icon: '🎮', isWin: true, prize: 'Pro Gaming PC Rig' },
+  { label: 'TRY AGAIN', color: '#1a0535', textColor: '#ff6b00', icon: '✗', isWin: false },
+  { label: '$25 CASH', color: '#0d2b00', textColor: '#39ff14', icon: '💸', isWin: true, prize: '$25 Cash Prize' },
+];
+
+const numSeg = segments.length;
+const arc = (2 * Math.PI) / numSeg;
+let spinning = false;
+let currentAngle = 0;
+let resultShown = false;
+
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const W = canvas.width;
+const H = canvas.height;
+const R = W / 2 - 10;
+const cx = W / 2, cy = H / 2;
+
+function drawWheel(angle) {
+  ctx.clearRect(0, 0, W, H);
+  // Glow ring
+  const grad = ctx.createRadialGradient(cx, cy, R - 8, cx, cy, R + 4);
+  grad.addColorStop(0, 'rgba(0,245,255,0.3)');
+  grad.addColorStop(1, 'rgba(0,245,255,0)');
+  ctx.beginPath();
+  ctx.arc(cx, cy, R + 4, 0, 2 * Math.PI);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  for (let i = 0; i < numSeg; i++) {
+    const start = angle + i * arc;
+    const end = start + arc;
+    const seg = segments[i];
+
+    // Segment
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, R, start, end);
+    ctx.closePath();
+    ctx.fillStyle = seg.color;
+    ctx.fill();
+
+    // Border
+    ctx.strokeStyle = 'rgba(0,245,255,0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Text
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(start + arc / 2);
+    ctx.textAlign = 'right';
+
+    // Icon
+    ctx.font = `${W * 0.05}px serif`;
+    ctx.fillText(seg.icon, R * 0.9, 5);
+
+    // Label
+    ctx.fillStyle = seg.textColor;
+    ctx.shadowColor = seg.textColor;
+    ctx.shadowBlur = 6;
+    ctx.font = `bold ${W * 0.032}px "Orbitron", sans-serif`;
+    ctx.fillText(seg.label, R * 0.67, 5);
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }
+
+  // Outer ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, 2 * Math.PI);
+  ctx.strokeStyle = 'rgba(0,245,255,0.6)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Inner ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, 28, 0, 2 * Math.PI);
+  ctx.fillStyle = '#05020f';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,230,0,0.6)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+drawWheel(0);
+
+// Determine winning segment at arrow (top = -π/2)
+function getSegmentAtArrow(angle) {
+  const norm = (((-Math.PI / 2 - angle) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  return Math.floor(norm / arc) % numSeg;
+}
+
+// ====== PREDETERMINED WIN LOGIC ======
+// Win if current second is in these seconds-of-minute
+function isWinningTime() {
+  const sec = new Date().getSeconds();
+  return [0, 12, 24, 36, 48].includes(sec); // 5 winning seconds per minute = 1 in ~12 roughly
+  // With 10 segments, 4 are wins. Effective odds ~1 in 5 approx
+}
+
+// ====== VALIDATION ======
+function validate() {
+  const fname = document.getElementById('fname').value.trim();
+  const lname = document.getElementById('lname').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const age = document.getElementById('age').value;
+  const state = document.getElementById('state').value;
+  const terms = document.getElementById('terms').checked;
+  const err = document.getElementById('errorMsg');
+
+  if (!fname || !lname) { err.textContent = '⚠ Please enter your full name.'; return false; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = '⚠ Please enter a valid email.'; return false; }
+  if (!age) { err.textContent = '⚠ Please select your age range.'; return false; }
+  if (!state) { err.textContent = '⚠ Please select your state.'; return false; }
+  if (!terms) { err.textContent = '⚠ You must agree to the Official Rules.'; return false; }
+  err.textContent = '';
+  return true;
+}
+
+// ====== GAME START ======
+function startGame() {
+  if (!validate()) return;
+
+  // Check "one per day" in localStorage (best effort)
+  const lastPlay = localStorage.getItem('cosmoLastPlay');
+  const today = new Date().toDateString();
+  if (lastPlay === today) {
+    document.getElementById('errorMsg').textContent = '⚠ You've already played today. Come back tomorrow!';
+    return;
+  }
+
+  document.getElementById('entryCard').style.display = 'none';
+  const ws = document.getElementById('wheelSection');
+  ws.classList.add('visible');
+
+  localStorage.setItem('cosmoLastPlay', today);
+  spinWheel();
+}
+
+// ====== SPIN WHEEL ======
+function spinWheel() {
+  if (spinning) return;
+  spinning = true;
+
+  const shouldWin = isWinningTime();
+  // Pick target segment
+  let targetIdx;
+  if (shouldWin) {
+    const winSegs = segments.map((s, i) => s.isWin ? i : -1).filter(i => i >= 0);
+    targetIdx = winSegs[Math.floor(Math.random() * winSegs.length)];
+  } else {
+    const loseSegs = segments.map((s, i) => !s.isWin ? i : -1).filter(i => i >= 0);
+    targetIdx = loseSegs[Math.floor(Math.random() * loseSegs.length)];
+  }
+
+  // Calculate final angle so target lands at arrow
+  const fullSpins = 5 + Math.floor(Math.random() * 4);
+  const targetAngle = (-Math.PI / 2) - (targetIdx * arc + arc / 2);
+  const finalAngle = currentAngle - (currentAngle % (2 * Math.PI)) + (2 * Math.PI * fullSpins) + targetAngle - currentAngle;
+
+  const totalDuration = 4000 + Math.random() * 1500;
+  const startTime = performance.now();
+  const startAngle = currentAngle;
+
+  function easeOut(t) {
+    return 1 - Math.pow(1 - t, 4);
+  }
+
+  function animate(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / totalDuration, 1);
+    const eased = easeOut(progress);
+    currentAngle = startAngle + finalAngle * eased;
+    drawWheel(currentAngle);
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      spinning = false;
+      currentAngle = startAngle + finalAngle;
+      drawWheel(currentAngle);
+      const landedIdx = getSegmentAtArrow(currentAngle);
+      setTimeout(() => showResult(segments[landedIdx]), 400);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+// ====== SHOW RESULT ======
+function showResult(seg) {
+  const overlay = document.getElementById('resultOverlay');
+  const card = document.getElementById('resultCard');
+  const now = new Date();
+
+  card.className = 'result-card ' + (seg.isWin ? 'win' : 'lose');
+  document.getElementById('resultEmoji').textContent = seg.isWin ? '🎉' : '🌌';
+  document.getElementById('resultHeadline').textContent = seg.isWin ? '★ YOU WIN! ★' : 'NOT THIS TIME...';
+  document.getElementById('resultPrize').textContent = seg.isWin ? `🏆 ${seg.prize}` : 'Better luck tomorrow, space traveler!';
+  document.getElementById('resultTime').textContent = `Entry recorded: ${now.toLocaleString()} UTC`;
+
+  if (seg.isWin) {
+    document.getElementById('resultMsg').innerHTML = `<strong>POTENTIAL WINNER!</strong> Your prize is pending sponsor verification. You'll receive a confirmation email within 48 hours. You have <strong>3 days</strong> to claim your prize. No purchase necessary.`;
+    launchConfetti();
+    playWinSound();
+  } else {
+    document.getElementById('resultMsg').innerHTML = `Thanks for playing! You may enter again tomorrow. Overall odds of winning: <strong>1 in 5</strong>. Alternative free entry via mail — see Official Rules.`;
+  }
+
+  overlay.classList.add('show');
+  document.getElementById('spinAgainBtn').style.display = 'inline-block';
+}
+
+function closeResult() {
+  document.getElementById('resultOverlay').classList.remove('show');
+}
+
+function resetGame() {
+  document.getElementById('wheelSection').classList.remove('visible');
+  document.getElementById('entryCard').style.display = 'block';
+  document.getElementById('spinAgainBtn').style.display = 'none';
+  document.getElementById('errorMsg').textContent = '⚠ You've already played today. Come back tomorrow!';
+  // Clear form if desired
+}
+
+// ====== CONFETTI ======
+const confCanvas = document.getElementById('confetti');
+const confCtx = confCanvas.getContext('2d');
+let confParticles = [];
+let confAnim = null;
+
+function launchConfetti() {
+  confCanvas.width = window.innerWidth;
+  confCanvas.height = window.innerHeight;
+  confParticles = [];
+  const colors = ['#ff2d78','#00f5ff','#ffe600','#39ff14','#bf00ff','#ff6b00','#ffffff'];
+  for (let i = 0; i < 200; i++) {
+    confParticles.push({
+      x: Math.random() * confCanvas.width,
+      y: -10,
+      vx: (Math.random() - 0.5) * 6,
+      vy: Math.random() * 4 + 2,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: Math.random() * 8 + 4,
+      rotation: Math.random() * 360,
+      rotSpeed: (Math.random() - 0.5) * 8,
+      opacity: 1,
+    });
+  }
+  if (confAnim) cancelAnimationFrame(confAnim);
+  animateConfetti();
+  setTimeout(() => { cancelAnimationFrame(confAnim); confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height); }, 5000);
+}
+
+function animateConfetti() {
+  confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
+  confParticles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.1;
+    p.rotation += p.rotSpeed;
+    p.opacity -= 0.004;
+    if (p.y > confCanvas.height) { p.y = -10; p.x = Math.random() * confCanvas.width; p.opacity = 1; p.vy = Math.random() * 4 + 2; }
+    confCtx.save();
+    confCtx.globalAlpha = Math.max(p.opacity, 0);
+    confCtx.translate(p.x, p.y);
+    confCtx.rotate(p.rotation * Math.PI / 180);
+    confCtx.fillStyle = p.color;
+    confCtx.shadowColor = p.color;
+    confCtx.shadowBlur = 4;
+    confCtx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+    confCtx.restore();
+  });
+  confAnim = requestAnimationFrame(animateConfetti);
+}
+
+// ====== WIN SOUND (Web Audio) ======
+function playWinSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [523, 659, 784, 1047, 1319];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      const t = ctx.currentTime + i * 0.12;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.15, t + 0.05);
+      gain.gain.linearRampToValueAtTime(0, t + 0.3);
+      osc.start(t);
+      osc.stop(t + 0.35);
+    });
+  } catch(e) {}
+}
+
+window.addEventListener('resize', () => {
+  confCanvas.width = window.innerWidth;
+  confCanvas.height = window.innerHeight;
+});
+</script>
+</body>
+</html>
